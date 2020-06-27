@@ -13,15 +13,21 @@ CQUI_ShowDebugPrint = true;
 --CQUI setting control support functions
 -- ===========================================================================
 function print_debug(str)
-    if CQUI_ShowDebugPrint then
-        print(str);
-    end
+  if CQUI_ShowDebugPrint then
+      print(str);
+  end
 end
 
 -- ===========================================================================
 function CQUI_OnSettingsUpdate()
-  print_debug("ENTRY: CQUICommon - CQUI_OnSettingsUpdate");
-  CQUI_ShowDebugPrint = GameConfiguration.GetValue("CQUI_ShowDebugPrint") -- == 1
+    if (GameInfo.CQUI_Settings ~= nil and GameInfo.CQUI_Settings["CQUI_ShowDebugPrint"] ~= nil) then
+        CQUI_ShowDebugPrint = GameInfo.CQUI_Settings["CQUI_ShowDebugPrint"].Value;
+    else
+        CQUI_ShowDebugPrint = GameConfiguration.GetValue("CQUI_ShowDebugPrint");
+    end
+
+  -- TEMP
+  print("CQUICommon CQUI_OnSettingsUpdate retrieved CQUI_ShowDebugPrint, value is: "..tostring(CQUI_ShowDebugPrint));
 end
 
 -- ===========================================================================
@@ -223,9 +229,21 @@ function CQUI_TrimGossipMessage(str:string)
 end
 
 -- ===========================================================================
-function Initialize()
-  print_debug("INITIALZE: CQUICommon.lua");
-  LuaEvents.CQUI_SettingsUpdate.Add(CQUI_OnSettingsUpdate);
-  LuaEvents.CQUI_SettingsInitialized.Add(CQUI_OnSettingsUpdate);
+--function Initialize()
+--  print_debug("INITIALZE: CQUICommon.lua");
+--  LuaEvents.CQUI_SettingsUpdate.Add(CQUI_OnSettingsUpdate);
+--  LuaEvents.CQUI_SettingsInitialized.Add(CQUI_OnSettingsUpdate);
+--end
+--Initialize();
+
+-- Faux Initialize function, don't really need one for this file as it's a support file for various CQUI things
+if (CQUI_CommonLoadedOnce == nil) then
+    print("&& && && && ********** CQUI_CommonLoadedOnce was NIL")
+    CQUI_CommonLoadedOnce = true;
+    LuaEvents.CQUI_SettingsUpdate.Add(CQUI_OnSettingsUpdate);
+    LuaEvents.CQUI_SettingsInitialized.Add(CQUI_OnSettingsUpdate);
+
+    -- temp
+else
+    print("************* CQUI_CommonLoadedOnce was true");
 end
-Initialize();

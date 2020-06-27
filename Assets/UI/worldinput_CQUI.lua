@@ -10,6 +10,7 @@ BASE_CQUI_DefaultKeyDownHandler    = DefaultKeyDownHandler;
 BASE_CQUI_DefaultKeyUpHandler      = DefaultKeyUpHandler;
 BASE_CQUI_ClearAllCachedInputState = ClearAllCachedInputState;
 BASE_CQUI_OnUserRequestClose       = OnUserRequestClose;
+BASE_CQUI_LateInitialize           = LateInitialize;
 
 -- ===========================================================================
 -- CQUI Members
@@ -26,9 +27,6 @@ local CQUI_isAltDown    :boolean = false;
 function CQUI_OnSettingsUpdate()
   CQUI_hotkeyMode = GameConfiguration.GetValue("CQUI_BindingsMode");
 end
-
-LuaEvents.CQUI_SettingsUpdate.Add( CQUI_OnSettingsUpdate );
-LuaEvents.CQUI_SettingsInitialized.Add( CQUI_OnSettingsUpdate );
 
 -- -- ===========================================================================
 -- --  VARIABLES
@@ -768,17 +766,16 @@ function CQUI_BuildImprovement (unit, improvementHash: number)
 end
 
 -- ===========================================================================
--- CQUI: Initialize Function
--- ===========================================================================
+function LateInitialize()
+  print_debug("WorldInput_CQUI LateInitialize ENTRY");
+  BASE_CQUI_LateInitialize();
 
--- ===========================================================================
-function Initialize()
-  print_debug("** Function Entry: Initialize (CQUI Hook)");
+  LuaEvents.CQUI_SettingsUpdate.Add( CQUI_OnSettingsUpdate );
+  LuaEvents.CQUI_SettingsInitialized.Add( CQUI_OnSettingsUpdate );
 
-  -- CQUI Events from end of Initialize
+  -- CQUI Events
   LuaEvents.CQUI_WorldInput_CityviewEnable.Add( function() CQUI_cityview = true; end );
   LuaEvents.CQUI_WorldInput_CityviewDisable.Add( function() CQUI_cityview = false; end );
   LuaEvents.CQUI_showUnitPath.Add(RealizeMovementPath);
   LuaEvents.CQUI_clearUnitPath.Add(ClearMovementPath);
 end
-Initialize();
